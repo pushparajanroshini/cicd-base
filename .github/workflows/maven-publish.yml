@@ -1,28 +1,28 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
-name: Maven Package
+# name: Maven Package
 
-on:
-  push:
-    branches: [main]
+# on:
+#   push:
+#     branches: [main]
 
-jobs:
-  build-with-jdk-21:
+# jobs:
+#   build-with-jdk-21:
 
-    runs-on: ubuntu-latest
+#     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
+#     steps:
+#     - uses: actions/checkout@v4
+#     - name: Set up JDK 21
+#       uses: actions/setup-java@v4
+#       with:
+#         java-version: '21'
+#         distribution: 'temurin'
 
-    - name: Build/Test with Maven
-      run: mvn -B test 
-      #--file pom.xml
+#     - name: Build/Test with Maven
+#       run: mvn -B test 
+#       #--file pom.xml
 
   # snyk-security-scanning:
     
@@ -34,7 +34,15 @@ jobs:
   #     env:
   #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-  snyk-security-scanning:
+name: Maven Package
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+
+  build-with-jdk-21:
     runs-on: ubuntu-latest
 
     steps:
@@ -46,8 +54,28 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Build/Test with Maven
+        run: mvn -B test
+
+  snyk-security-scanning:
+    needs: build-with-jdk-21
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Verify Java
+        run: |
+          java -version
+          echo $JAVA_HOME
+
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/maven@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        
