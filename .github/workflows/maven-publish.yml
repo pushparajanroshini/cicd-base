@@ -24,13 +24,30 @@ jobs:
       run: mvn -B test 
       #--file pom.xml
 
-  snyk-security-scanning:
+  # snyk-security-scanning:
     
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@master
+  #   - name: Run Snyk to check for vulnerabilities
+  #     uses: snyk/actions/maven@master
+  #     env:
+  #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  snyk-security-scanning:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@master
-    - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/maven@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/maven@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        
