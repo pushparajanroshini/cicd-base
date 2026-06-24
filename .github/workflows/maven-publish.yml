@@ -34,14 +34,39 @@
   #     env:
   #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+
+
+  # snyk-security-scanning:
+  #   needs: build-with-jdk-21
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Set up JDK 21
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: '21'
+  #         distribution: 'temurin'
+
+  #     - name: Verify Java
+  #       run: |
+  #         java -version
+  #         echo $JAVA_HOME
+
+  #     - name: Run Snyk to check for vulnerabilities
+  #       uses: snyk/actions/maven@master
+  #       env:
+  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+
 name: Maven Package
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-
   build-with-jdk-21:
     runs-on: ubuntu-latest
 
@@ -70,12 +95,11 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Verify Java
-        run: |
-          java -version
-          echo $JAVA_HOME
+      - name: Install Snyk CLI
+        run: npm install -g snyk
 
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/maven@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk Test
+        run: snyk test --file=pom.xml
