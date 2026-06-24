@@ -69,7 +69,7 @@
 3. put the following line in system.properties files.
 java.runtime.version=18
 
-4. git add *
+4. git add .
 
 5. git commit -m "added/updated system.properties"
 
